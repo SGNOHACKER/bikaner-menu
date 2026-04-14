@@ -40,6 +40,13 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
+        html {
+            background: linear-gradient(rgba(26, 15, 13, 0.9), rgba(26, 15, 13, 0.95)), 
+                        url('hero.png') center/cover no-repeat fixed;
+            height: 100%;
+            overflow: hidden;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-dark);
@@ -49,11 +56,12 @@
             max-width: 480px;
             margin: 0 auto;
             position: relative;
-            box-shadow: 0 0 100px rgba(0,0,0,0.8);
-            min-height: 100vh;
-            border-left: 1px solid rgba(201, 162, 39, 0.1);
-            border-right: 1px solid rgba(201, 162, 39, 0.1);
+            box-shadow: 0 0 50px rgba(0,0,0,1), 0 0 100px rgba(201, 162, 39, 0.1);
+            height: 100vh;
+            border-left: 1px solid rgba(201, 162, 39, 0.2);
+            border-right: 1px solid rgba(201, 162, 39, 0.2);
             -webkit-overflow-scrolling: touch;
+            overflow-y: auto;
         }
 
         /* Hardware Acceleration for Smoothness */
@@ -236,8 +244,9 @@
 
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 30px;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 0 15px;
             transition: opacity 0.3s ease;
         }
 
@@ -246,19 +255,20 @@
         }
 
         .menu-item {
-            background: rgba(255, 248, 231, 0.02);
-            border: 1px solid rgba(201, 162, 39, 0.1);
-            border-radius: 15px;
-            padding: 25px;
+            background: rgba(255, 248, 231, 0.04);
+            border: 1px solid rgba(201, 162, 39, 0.15);
+            border-radius: 16px;
+            padding: 20px;
             display: flex;
             gap: 20px;
             cursor: pointer;
             transition: var(--transition);
             opacity: 0;
-            transform: translateY(40px);
+            transform: translateY(20px);
             position: relative;
             overflow: hidden;
-            will-change: transform, opacity;
+            min-height: 160px;
+            align-items: center;
         }
 
         .menu-item::before {
@@ -362,8 +372,8 @@
         }
 
         .menu-item img {
-            width: 110px;
-            height: 110px;
+            width: 100px;
+            height: 100px;
             border-radius: 12px;
             object-fit: cover;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -590,9 +600,9 @@
     </section>
 
     <div class="quick-actions">
-        <button class="action-btn whatsapp" onclick="window.open('https://wa.me/919876543210?text=Hi, I would like to order from Bikaner Elite', '_blank')">💬</button>
-        <button class="action-btn call" onclick="window.open('tel:+919876543210', '_blank')">📞</button>
-        <button class="action-btn directions" onclick="window.open('https://maps.google.com/?q=Saguna+More,+Danapur,+Patna', '_blank')">📍</button>
+        <button class="action-btn whatsapp" onclick="window.open('https://wa.me/918448441056?text=Hi, I would like to order from Bikaner Elite', '_blank')">💬</button>
+        <button class="action-btn call" onclick="window.open('tel:+918448441056', '_blank')">📞</button>
+        <button class="action-btn directions" onclick="window.open('https://maps.app.goo.gl/3y6E8A9H6pC9nZXz5', '_blank')">📍</button>
     </div>
 
     <footer class="footer">
@@ -626,177 +636,8 @@
         </div>
     </div>
 
-    <script src="menuData.js"></script>
-    <script>
-        // Configuration
-        const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&h=100&fit=crop&auto=format&fm=jpg&q=80';
-        const FALLBACK_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"%3E%3Crect width="60" height="60" fill="%23c9a227" opacity="0.1" /%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="20" fill="%23c9a227"%3E🍽️%3C/text%3E%3C/svg%3E';
-        const ITEMS_PER_PAGE = 20;
+<script src="./menuData.js" defer></script>
+<script src="./script.js" defer></script>
 
-        // State Management
-        let currentFilteredItems = [...menuData];
-        let visibleCount = ITEMS_PER_PAGE;
-
-        // Render menu items with optimized DOM updates
-        function renderMenu(items, append = false) {
-            const menuGrid = document.getElementById('menu-grid');
-            if (!append) menuGrid.innerHTML = '';
-            
-            const fragment = document.createDocumentFragment();
-            
-            items.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'menu-item';
-                itemDiv.id = `item-${item.id}`;
-                itemDiv.innerHTML = `
-                    <div class="menu-item-content">
-                        <div class="menu-item-header">
-                            <h3>${item.name || 'Dish'}</h3>
-                            <div class="veg-indicator ${item.veg !== false ? 'veg' : 'non-veg'}"></div>
-                        </div>
-                        <p class="price">₹${item.price || 0}</p>
-                        <p class="description">${item.description || 'A chef special preparation'}</p>
-                        ${item.special ? '<span class="chef-special">Chef\'s Special</span>' : ''}
-                    </div>
-                    <img src="${item.image || DEFAULT_IMAGE}" alt="${item.name}" loading="lazy" decoding="async" width="110" height="110" onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'">
-                `;
-                itemDiv.addEventListener('click', () => openSheet(item));
-                fragment.appendChild(itemDiv);
-            });
-            
-            menuGrid.appendChild(fragment);
-            observeAnimations();
-        }
-
-        // Combined Filter Function
-        async function updateDisplay() {
-            const menuGrid = document.getElementById('menu-grid');
-            menuGrid.classList.add('loading');
-            
-            const activeTab = document.querySelector('.nav-tab.active');
-            const category = activeTab ? activeTab.getAttribute('data-category') : 'all';
-            const query = document.getElementById('search').value.toLowerCase().trim();
-            
-            // Artificial delay for smoother transition (optional, but feels better)
-            await new Promise(r => setTimeout(r, 100));
-
-            currentFilteredItems = menuData.filter(item => {
-                const matchesCategory = category === 'all' || item.category === category;
-                const matchesSearch = !query || 
-                                    item.name.toLowerCase().includes(query) || 
-                                    (item.description && item.description.toLowerCase().includes(query));
-                return matchesCategory && matchesSearch;
-            });
-
-            visibleCount = ITEMS_PER_PAGE;
-            renderMenu(currentFilteredItems.slice(0, visibleCount));
-            
-            menuGrid.classList.remove('loading');
-            
-            // Show empty state if no items
-            if (currentFilteredItems.length === 0) {
-                menuGrid.innerHTML = '<div style="text-align:center;width:100%;padding:40px;color:rgba(245, 230, 202, 0.5)">No dishes found matching your criteria</div>';
-            }
-        }
-
-        // Bottom Sheet Functions
-        function openSheet(item) {
-            const sheet = document.getElementById('bottomSheet');
-            const backdrop = document.getElementById('backdrop');
-            
-            document.getElementById('sheetImage').src = item.image || DEFAULT_IMAGE;
-            document.getElementById('sheetName').textContent = item.name;
-            document.getElementById('sheetPrice').textContent = '₹' + item.price;
-            document.getElementById('sheetFullDesc').textContent = item.fullDescription || item.description;
-            
-            const ingredientsList = document.getElementById('sheetIngredients');
-            ingredientsList.innerHTML = '';
-            (item.ingredients || ['Fresh ingredients']).forEach(ing => {
-                const li = document.createElement('li');
-                li.textContent = ing;
-                ingredientsList.appendChild(li);
-            });
-            
-            sheet.style.transform = 'translateY(0)';
-            backdrop.style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Prevent background scroll
-        }
-
-        function closeSheet() {
-            document.getElementById('bottomSheet').style.transform = 'translateY(100%)';
-            document.getElementById('backdrop').style.display = 'none';
-            document.body.style.overflow = '';
-        }
-
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initial Render
-            updateDisplay();
-
-            // Efficient Infinite Scroll using IntersectionObserver
-            const scrollObserver = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && visibleCount < currentFilteredItems.length) {
-                    const nextItems = currentFilteredItems.slice(visibleCount, visibleCount + ITEMS_PER_PAGE);
-                    visibleCount += ITEMS_PER_PAGE;
-                    renderMenu(nextItems, true);
-                }
-            }, { rootMargin: '400px' });
-
-            // Create and observe sentinel for loading more
-            const sentinel = document.createElement('div');
-            sentinel.id = 'scroll-sentinel';
-            sentinel.style.height = '10px';
-            document.body.appendChild(sentinel);
-            scrollObserver.observe(sentinel);
-
-            // Tabs
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    updateDisplay();
-                });
-            });
-
-            // Search with basic debounce
-            let searchTimeout;
-            document.getElementById('search').addEventListener('input', (e) => {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(updateDisplay, 300);
-            });
-
-            // UI Elements
-            document.getElementById('closeBtn').addEventListener('click', closeSheet);
-            document.getElementById('backdrop').addEventListener('click', closeSheet);
-            
-            const viewMenuBtn = document.getElementById('viewMenuBtn');
-            if(viewMenuBtn) {
-                viewMenuBtn.addEventListener('click', () => {
-                    const menu = document.getElementById('menu');
-                    const navHeight = document.querySelector('.nav').offsetHeight;
-                    window.scrollTo({
-                        top: menu.offsetTop - navHeight - 20,
-                        behavior: 'smooth'
-                    });
-                });
-            }
-        });
-
-        // Optimized Entrance Animations
-        const menuObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    menuObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1, rootMargin: '100px' });
-
-        function observeAnimations() {
-            document.querySelectorAll('.menu-item:not(.visible)').forEach(item => {
-                menuObserver.observe(item);
-            });
-        }
-    </script>
 </body>
 </html>
