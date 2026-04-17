@@ -1,7 +1,7 @@
 import qrcode
 
 # URL of the website
-url = "https://bikaner-menu.netlify.app/"
+url = "https://sgnohacker.github.io/bikaner-menu"
 
 # Generate QR code
 qr = qrcode.QRCode(
